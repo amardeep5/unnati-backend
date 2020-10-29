@@ -39,9 +39,30 @@ const userSchema = new mongoose.Schema({
         type:Boolean,
         default:false
     },
-    isRejected:{
+    isAdminRejected:{
         type:Boolean,
         default:false
-    }
+    },
+    isTeacherRejected:{
+        type:Boolean,
+        default:false
+    },
+    isTeacherApproved:{
+        type:Boolean,
+        default:false
+    },
+    cafe:{
+        type:String,
+        required:true
+    },
+    feesPaid:{
+        type:Boolean,
+        default:false
+    },
+    receipts:[{
+        type: mongoose.Schema.Types.ObjectId,
+         ref: "Receipt"
+    }],
+    createdAt: { type: Date, default: Date.now },
 })
 mongoose.model('User',userSchema)

@@ -4,10 +4,7 @@ const mongoose= require('mongoose');
 const User = mongoose.model('User');
 const bcrypt = require('bcryptjs');
 const jwt  = require('jsonwebtoken');
-// require('dotenv').config()
 const jwt_secret=process.env.JWT_SECRET;
-console.log(typeof(process.env.JWT_SECRET),typeof(jwt_secret));
-
 
 router.post("/login",async (req,res)=>{
   const {password,email} = req.body
@@ -24,21 +21,21 @@ router.post("/login",async (req,res)=>{
                 const token = jwt.sign({_id:savedUser._id},jwt_secret) 
                 const {username,email,_id,role,firstName,lastName,phoneNumber}=savedUser;
                 if(role==='STUDENT'){
-                    res.json({message:"Signed IN",token,user:{username,email,_id,firstName,lastName,phoneNumber},done:true})
+                    if(savedUser.isTeacherApproved){
+                        res.json({message:"Signed IN",token,user:{username,email,_id,firstName,lastName,phoneNumber},done:true})
+                    }else if(savedUser.isTeacherRejected){
+                        res.json({message:"Your Application is Rejected",token,user:{username,email,_id,firstName,lastName,phoneNumber},done:true})
+                    }else{
+                        res.json({message:"Your Application is under process process",token,user:{username,email,_id,firstName,lastName,phoneNumber},done:true})
+                    }
                 }else if(role==='ENTREPRENEUR'){
                     if(savedUser.isAdminApproved){
                         res.json({message:"Signed IN",token,user:{username,email,_id,firstName,lastName,phoneNumber},done:true})   
                     }else{
-                        if(isRejected){
-                            // User.deleteOne({ _id: savedUser._id }, function (err) {
-                            //     if (err){
-                            //         console.log(err)
-                            //         return ;
-                            //     } 
-                            //   });
-                            res.json({message:"Your Application is Rejected",done:true})  
+                        if(savedUser.isAdminRejected){
+                            res.json({message:"Your Application is Rejected",token,user:{username,email,_id,firstName,lastName,phoneNumber},done:true})  
                         }else{
-                            res.json({message:"Your Application is under Process",done:true})
+                            res.json({message:"Your Application is under Process",token,user:{username,email,_id,firstName,lastName,phoneNumber},done:true})
                         }   
                     }
                 }else{
@@ -47,7 +44,6 @@ router.post("/login",async (req,res)=>{
               }else{
                 res.status(422).json({error:"Password or Email is incorrect",done:false}) 
               }
-            //   console.log(req.user);
           }
       } catch (error) {
           console.log(error)   
@@ -57,10 +53,10 @@ router.post("/login",async (req,res)=>{
 
 
 router.post("/signup",async (req,res)=>{
-    const {username,email,password,role,firstName,lastName,phoneNumber}=req.body;
+    const {username,email,password,role,firstName,lastName,phoneNumber,cafe}=req.body;
     if(!email || !password || !username || !firstName || !lastName || !phoneNumber || !role){
         res.status(422).json({error:"Please add all the details",done:false})
-    }else{
+    }else{ 
         try {
             const savedUser=await User.findOne({email})
             if(savedUser){
@@ -68,7 +64,7 @@ router.post("/signup",async (req,res)=>{
             }else{
                 try {
                     const hashedPassword = await bcrypt.hash(password,12)
-                    const newUser = await User.create({email,username,password:hashedPassword,role,firstName,lastName,phoneNumber})
+                    const newUser = await User.create({email,username,password:hashedPassword,role,firstName,lastName,phoneNumber,cafe})
                     res.json({message:"User created",user:newUser,done:true})
                 } catch (err) {
                     console.log(err)

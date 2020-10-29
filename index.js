@@ -12,9 +12,9 @@ app.use(cors());
 app.use(express.json())
 app.use(require('./routes/auth'))
 
-app.get("/",authenticate,(req,res)=>{
-    res.send("its Protected")
-})
+// app.get("/",authenticate,(req,res)=>{
+//     res.send("its Protected")
+// })
 
 app.get("/admin",authenticate,restrictTo("ADMIN"),async (req,res)=>{
     try {
@@ -37,6 +37,6 @@ mongoose.connection.on('connected',()=>{
 mongoose.connection.on('err',()=>{
     console.log("error while connecting",err);
 })
-app.listen('3001',()=>{
-    console.log("server running at port 3001" )
+app.listen('3000',()=>{
+    console.log("server running at port 3000" )
 })
