@@ -69,6 +69,26 @@ const userSchema = new mongoose.Schema({
             default:false
         }
     }],
+    assignmentsDone:[{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Assignment"
+    }],
+    testsDone:[{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Test"
+    }],
+    lecturesDone:[{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Lecture"
+    }],
+    topicsDone:[{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Topic"
+    }],
+    coursesDone:[{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Course"
+    }],
     createdAt: { type: Date, default: Date.now },
 })
 mongoose.model('User',userSchema)
