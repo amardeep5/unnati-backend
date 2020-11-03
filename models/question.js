@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-const userSchema = new mongoose.Schema({
+const questionSchema = new mongoose.Schema({
     correctAns:{
         type:String,
         required:[true, 'Please enter encoded answer string!']
@@ -15,7 +15,11 @@ const userSchema = new mongoose.Schema({
     options:{
         type:Array,
         default:[]
+    },
+    maxMarks:{
+        type:Number,
+        required:[true, 'Please enter maximum marks of question!']
     }
 })
 
-mongoose.model('question',userSchema)
+mongoose.model('Question',questionSchema)

@@ -1,11 +1,13 @@
 const mongoose = require('mongoose')
-const userSchema = new mongoose.Schema({
-    student_id:{
+const responseSheetSchema = new mongoose.Schema({
+    studentId:{
         type:mongoose.Schema.Types.ObjectId,
+        ref:"User",
         required:[true, 'Please enter student id!']
     },
-    test_id:{
+    testId:{
         type:mongoose.Schema.Types.ObjectId,
+        ref:"Test",
         required:[true, 'Please enter test id!']
     },
     score:{
@@ -20,10 +22,12 @@ const userSchema = new mongoose.Schema({
         type:Number,
         required:[true, 'Please fill the max_time or duration!'],
     },
-    responses:{
-        type:Array,
-        default:[]
-    }
+    responses:[{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"Response"
+    }],    
+    createdAt: { type: Date, default: Date.now },
+
 })
 
-mongoose.model('test_response',userSchema)
+mongoose.model('ResponseSheet',responseSheetSchema)

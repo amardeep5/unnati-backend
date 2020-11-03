@@ -55,10 +55,6 @@ const userSchema = new mongoose.Schema({
         type:String,
         required:true
     },
-    feesPaid:{
-        type:Boolean,
-        default:false
-    },
     receipts:[{
         type: mongoose.Schema.Types.ObjectId,
          ref: "Receipt"

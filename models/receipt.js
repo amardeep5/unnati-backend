@@ -13,6 +13,10 @@ const receiptSchema = new mongoose.Schema({
         type:String,
         required:[true, 'Please fill a valid ID'],
     },
+    courseEnrolled:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Course"
+    },
     createdAt: { type: Date, default: Date.now },
 
 })

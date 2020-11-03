@@ -1,6 +1,5 @@
-mongoose.model('test_reponse',userSchema)
 const mongoose = require('mongoose')
-const userSchema = new mongoose.Schema({
+const testSchema = new mongoose.Schema({
     subjectCode:{
         type:String,
         required:[true, 'Please enter valid subject code!']
@@ -9,7 +8,7 @@ const userSchema = new mongoose.Schema({
         type:String,
         required:[true, 'Please enter valid subject name!']
     },
-    topic: {
+    testName: {
         type:String,
         required:[true, 'Please fill the topic of test!'],
     },
@@ -17,10 +16,27 @@ const userSchema = new mongoose.Schema({
         type:Number,
         required:[true, 'Please fill the duration of test!'],
     },
-    questions:{
-        type:Array,
-        default:[]
-    }
+    maxMarks: {
+        type:Number,
+        required:[true, 'Please fill the maximum marks of test!'],
+    },
+    questions:[{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Question"
+    }],
+    attemptedBy:[{
+        user:{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User"
+        },
+        responseSheet:{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "ResponseSheet"   
+        }
+    }],
+    
+    createdAt: { type: Date, default: Date.now },
+
 })
     
-mongoose.model('test',userSchema)
+mongoose.model('Test',testSchema)
