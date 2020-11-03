@@ -59,6 +59,16 @@ const userSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
          ref: "Receipt"
     }],
+    coursesEnrolled:[{ 
+        course:{   
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Course"
+        },
+        feesPaid:{
+            type:Boolean,
+            default:false
+        }
+    }],
     createdAt: { type: Date, default: Date.now },
 })
 mongoose.model('User',userSchema)
