@@ -18,10 +18,8 @@ const courseSchema = new mongoose.Schema({
         ref: "Topic"
     }],
     enrolledUsers:[{
-        user:{   
             type: mongoose.Schema.Types.ObjectId,
             ref: "User"
-        },
     }],
     fees:{ 
         type:Number,
