@@ -5,14 +5,6 @@ const receiptSchema = new mongoose.Schema({
         type:Number,
         required:[true, 'Please fill amount'],
     },
-    mode:{
-        type:String,
-        required:[true, 'Please fill a valid mode'],
-    },
-    paymentId:{
-        type:String,
-        required:[true, 'Please fill a valid ID'],
-    },
     courseEnrolled:{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Course"

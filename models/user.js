@@ -52,8 +52,8 @@ const userSchema = new mongoose.Schema({
         default:false
     },
     cafe:{
-        type:String,
-        required:true
+        type: mongoose.Schema.Types.ObjectId,
+         ref: "Cafe"
     },
     receipts:[{
         type: mongoose.Schema.Types.ObjectId,
@@ -69,25 +69,50 @@ const userSchema = new mongoose.Schema({
             default:false
         }
     }],
-    assignmentsDone:[{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Assignment"
-    }],
-    testsDone:[{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Test"
-    }],
-    lecturesDone:[{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Lecture"
-    }],
-    topicsDone:[{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Topic"
-    }],
-    coursesDone:[{
+    teacherAccessCourses:[{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Course"
+    }],
+    assignmentsDone:[{
+        assignment:{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Assignment"
+        },
+        marksScored:{
+            type:Number,
+            required:[true, 'Please fill the maximum marks of test!'],
+        },
+        attemptsLeft:{
+            type:Number,
+            default:3,
+            required:[true, 'Please fill the maximum marks of test!'],
+        }
+    }],
+    testsDone:[{
+        test:{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Test"
+        },
+        marksScored:{
+            type:Number,
+            required:[true, 'Please fill the maximum marks of test!'],
+        },
+        responseSheet:{
+            type: mongoose.Schema.Types.ObjectId,
+              ref: "ResponseSheet"   
+        }
+    }],
+    lecturesDone:[{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Lecture"
+    }],
+    topicsDone:[{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Topic"
+    }],
+    coursesDone:[{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Course"
     }],
     createdAt: { type: Date, default: Date.now },
 })

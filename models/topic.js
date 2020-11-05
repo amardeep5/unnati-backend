@@ -9,20 +9,27 @@ const topicSchema = new mongoose.Schema({
         type:String,
         required:[true, 'Please enter valid subject name!']
     },
+    serialNumber:{
+        type:Number,
+        required:true
+    },
     topicName: {
         type:String,
         required:[true, 'Please fill the topic name !'],
     },
 
     //lectures schema to be built
-    
-    tests:[{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Test"
-    }],
-    assignments:[{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Assignment"
+
+    contentOrder:[{ 
+        id:{
+            type: mongoose.Schema.Types.ObjectId,
+            required: true
+        },
+        content:{
+            type:String,
+            enum:['ASSIGNMENT','TEST','LECTURE'],
+            required:[true, 'Please fill the content type !'],
+        }
     }],
     
     createdAt: { type: Date, default: Date.now },

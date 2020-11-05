@@ -21,10 +21,16 @@ const courseSchema = new mongoose.Schema({
             type: mongoose.Schema.Types.ObjectId,
             ref: "User"
     }],
-    fees:{ 
-        type:Number,
-        default:100,
-        required:[true, 'Please enter valid fees!']
+    fees:{   
+        cafe:{
+            type: mongoose.Schema.Types.ObjectId,
+             ref: "Cafe"
+        },
+        amount:{
+            type:Number,
+            default:100,
+            required:[true, 'Please enter valid amount!']
+        }
     },
     createdAt: { type: Date, default: Date.now },
 

@@ -12,7 +12,7 @@ const authenticate = require('./middleware/authenticate')
 const restrictTo = require('./middleware/restrictTo')
 app.use(cors());
 app.use(express.json())
-app.use(require('./routes/auth'))
+app.use(require('./routes/auth/auth.js'))
 app.use(require('./routes/evaluation'))
 
 // app.get("/",authenticate,(req,res)=>{

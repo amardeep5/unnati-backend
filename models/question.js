@@ -17,14 +17,6 @@ const questionSchema = new mongoose.Schema({
         type:Array,
         default:[]
     },
-    subjectCode:{
-        type:String,
-        required:[true, 'Please enter valid subject code!']
-    },
-    subjectName:{
-        type:String,
-        required:[true, 'Please enter valid subject name!']
-    },
     maxMarks:{
         type:Number,
         required:[true, 'Please enter maximum marks of question!']

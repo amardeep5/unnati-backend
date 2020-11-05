@@ -8,6 +8,10 @@ const assignmentSchema = new mongoose.Schema({
         type:String,
         required:[true, 'Please enter valid subject name!']
     },
+    serialNumber:{
+        type:Number,
+        required:true
+    },
     assignmentName: {
         type:String,
         required:[true, 'Please fill the topic of test!'],
@@ -24,21 +28,6 @@ const assignmentSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Question"
     }],
-    attemptedBy:[{
-        user:{
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "User"
-        },
-        marksScored:{
-            type:Number,
-            required:[true, 'Please fill the maximum marks of test!'],
-        },
-        attemptsLeft:{
-            type:Number,
-            default:3,
-            required:[true, 'Please fill the maximum marks of test!'],
-        }
-    }]
 })
     
 mongoose.model('Assignment',assignmentSchema)
