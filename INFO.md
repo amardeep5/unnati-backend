@@ -3,7 +3,7 @@
 ## API INFOS
 
 ### ADMIN
-
+ 
 /teacherApproval/:id -----> FOR TEACHER APPROVAL FROM ADMIN
 /studentApproval/:id -----> FOR STUDENT APPROVAL FROM ADMIN OR TEACHER
 /teacherRejection/:id -----> FOR TEACHER REJECTION OR REMOVAL FROM ADMIN
