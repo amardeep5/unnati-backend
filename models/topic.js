@@ -11,7 +11,6 @@ const topicSchema = new mongoose.Schema({
     },
     serialNumber:{
         type:Number,
-        required:true
     },
     topicName: {
         type:String,

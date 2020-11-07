@@ -28,17 +28,6 @@ const testSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Question"
     }],
-    // attemptedBy:[{
-    //     user:{
-    //         type: mongoose.Schema.Types.ObjectId,
-    //         ref: "User"
-    //     },
-    //     responseSheet:{
-    //         type: mongoose.Schema.Types.ObjectId,
-    //         ref: "ResponseSheet"   
-    //     }
-    // }],
-    
     createdAt: { type: Date, default: Date.now },
 
 })

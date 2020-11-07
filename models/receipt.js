@@ -1,6 +1,10 @@
 const mongoose = require('mongoose')
 const validator = require('validator');
 const receiptSchema = new mongoose.Schema({
+    name:{
+        type: 'string',
+        required: true
+    },
     amount:{
         type:Number,
         required:[true, 'Please fill amount'],

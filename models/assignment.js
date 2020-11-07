@@ -10,7 +10,7 @@ const assignmentSchema = new mongoose.Schema({
     },
     serialNumber:{
         type:Number,
-        required:true
+        // required:true
     },
     assignmentName: {
         type:String,
