@@ -28,7 +28,7 @@ router.post("/login",async (req,res)=>{
                     }else{
                         res.json({message:"Your Application is under process process",token,user:{username,email,_id,firstName,lastName,phoneNumber},done:true})
                     }
-                }else if(role==='ENTREPRENEUR'){
+                }else if(role==='TEACHER'){
                     if(savedUser.isAdminApproved){
                         res.json({message:"Signed IN",token,user:{username,email,_id,firstName,lastName,phoneNumber},done:true})   
                     }else{

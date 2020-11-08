@@ -1,9 +1,9 @@
 const mongoose = require('mongoose')
 const questionSchema = new mongoose.Schema({
-    correctAns:{
+    correctAns:[{
         type:String,
         required:[true, 'Please enter encoded answer string!']
-    },
+    }],
     type:{
         type:String,
         enum: ['SINGLECORRECT','MULTICORRECT','TYPED'],
@@ -15,7 +15,7 @@ const questionSchema = new mongoose.Schema({
     },
     options:{
         type:Array,
-        default:[]
+        default:[],
     },
     maxMarks:{
         type:Number,

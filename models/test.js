@@ -10,7 +10,6 @@ const testSchema = new mongoose.Schema({
     },
     serialNumber:{
         type:Number,
-        required:true
     },
     testName: {
         type:String,

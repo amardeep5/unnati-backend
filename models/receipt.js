@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 const validator = require('validator');
 const receiptSchema = new mongoose.Schema({
     name:{
-        type: 'string',
+        type: String,
         required: true
     },
     amount:{
