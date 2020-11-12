@@ -31,17 +31,21 @@ const restrictTo = require('./../../middleware/restrictTo')
 router.post("/teacherApproval/:id",authenticate,restrictTo("ADMIN"),async (req,res) => {
     try {
         const teacher = await User.findById({_id: req.params.id})
-        if(teacher.role!=='TEACHER'){
-            res.status(402).json({error:" Not A Teacher ",done:false});
+        if(teacher){
+            if(teacher.role!=='TEACHER'){
+                res.status(402).json({error:" Not A Teacher ",done:false});
+            }
+            else{
+                teacher.isAdminApproved=true
+                teacher.save(function (err) {
+                    if (err){
+                        console.log(err);
+                        return;
+                    }  
+                    res.status(200).json({message:"teacher approved",done:true});
+                }); 
+            }   
         }
-        teacher.isAdminApproved=true
-        teacher.save(function (err) {
-            if (err){
-                console.log(err);
-                return;
-            }  
-            res.status(200).json({message:"teacher approved",done:true});
-          });    
     } catch (error) {
         console.log(error);
     }
@@ -49,17 +53,21 @@ router.post("/teacherApproval/:id",authenticate,restrictTo("ADMIN"),async (req,r
 router.post("/studentApproval/:id",authenticate,restrictTo("ADMIN","TEACHER"),async (req,res) => {
     try {
         const student = await User.findById({_id: req.params.id})
-        if(student.role!=='STUDENT'){
-            res.status(402).json({error:" Not A student ",done:false});
-        }
-        student.isTeacherApproved=true
-        student.save(function (err) {
-            if (err){
-                console.log(err);
-                return;
+        if(student){
+            if(student.role!=='STUDENT'){
+                res.status(402).json({error:" Not A student ",done:false});
+            }
+            else{
+                student.isTeacherApproved=true
+                student.save(function (err) {
+                    if (err){
+                        console.log(err);
+                        return;
+                    }  
+                    res.status(200).json({message:"student approved",done:true});
+                });  
             }  
-            res.status(200).json({message:"student approved",done:true});
-          });    
+        }
     } catch (error) {
         console.log(error);
     }
@@ -69,17 +77,21 @@ router.post("/studentApproval/:id",authenticate,restrictTo("ADMIN","TEACHER"),as
 router.post("/teacherRejection/:id",authenticate,restrictTo("ADMIN"),async (req,res) => {
     try {
         const teacher = await User.findById({_id: req.params.id})
-        if(teacher.role!=='TEACHER'){
-            res.status(402).json({error:" Not A Teacher ",done:false});
+        if(teacher){
+            if(teacher.role!=='TEACHER'){
+                res.status(402).json({error:" Not A Teacher ",done:false});
+            }
+            else{
+                teacher.isAdminRejected=true
+                teacher.save(function (err) {
+                    if (err){
+                        console.log(err);
+                        return;
+                    }  
+                    res.status(200).json({message:"teacher rejected",done:true});
+                }); 
+            }   
         }
-        teacher.isAdminRejected=true
-        teacher.save(function (err) {
-            if (err){
-                console.log(err);
-                return;
-            }  
-            res.status(200).json({message:"teacher rejected",done:true});
-          });    
     } catch (error) {
         console.log(error);
     }
@@ -87,18 +99,22 @@ router.post("/teacherRejection/:id",authenticate,restrictTo("ADMIN"),async (req,
 router.post("/studentRejection/:id",authenticate,restrictTo("ADMIN","TEACHER"),async (req,res) => {
     try {
         const student = await User.findById({_id: req.params.id})
-        if(student.role!=='STUDENT'){
-            res.status(402).json({error:" Not A student ",done:false});
-        }
-        student.isTeacherRejected=true
-        student.save(function (err) {
-            if (err){
-                console.log(err);
-                return;
-            }  
-            // saved!
-            res.status(200).json({message:"student rejected",done:true});
-          });    
+        if(student){
+            if(student.role!=='STUDENT'){
+                res.status(402).json({error:" Not A student ",done:false});
+            }
+            else{
+                student.isTeacherRejected=true
+                student.save(function (err) {
+                    if (err){
+                        console.log(err);
+                        return;
+                    }  
+                    // saved!
+                    res.status(200).json({message:"student rejected",done:true});
+                });
+                }
+        }    
     } catch (error) {
         console.log(error);
     }
@@ -126,8 +142,14 @@ router.post("/create-cafe",authenticate,restrictTo("ADMIN"),async (req,res)=>{
     if(!location&&!address){
         res.status(422).json({error:" location or address missing",done:false});
     }
-    const cafe = await Cafe.create({location,address})
-    res.status(200).json({message:" cafe created",done:true,cafe});
+    else{
+        try {
+            const cafe = await Cafe.create({location,address})
+            res.status(200).json({message:" cafe created",done:true,cafe});
+        } catch (error) {
+            console.log(error);
+        }
+    }
 })
 router.get("/getAll-cafe",async (req,res)=>{
      try {
@@ -195,11 +217,13 @@ router.post("/create-question",authenticate,restrictTo("ADMIN"), async (req, res
     if(!correctAns||!type||!statement||!maxMarks){
         res.status(422).json({error:" fill all the fields",done:false});
     }
-    try {
-        quest = Question.create({correctAns,type,statement,options,maxMarks});
-        res.status(200).json({message:'question created',done:true,quest});
-    } catch (error) {
-     console.log(error);   
+    else{
+        try {
+            quest = Question.create({correctAns,type,statement,options,maxMarks});
+            res.status(200).json({message:'question created',done:true,quest});
+        } catch (error) {
+         console.log(error);   
+        }
     }
 
 })
@@ -223,11 +247,13 @@ router.post("/create-test",authenticate,restrictTo("ADMIN"), async (req, res) =>
     if(!subjectCode||!subjectName||!testName||!duration||!maxMarks||!questions){
         res.status(422).json({error:" fill all the fields",done:false});
     }
-    try {
-        test=Test.create({subjectCode,subjectName,testName,duration,maxMarks,questions});
-        res.status(200).json({message:'Test created',done:true,test});
-    } catch (error) {
-     console.log(error);   
+    else{
+        try {
+            test=Test.create({subjectCode,subjectName,testName,duration,maxMarks,questions});
+            res.status(200).json({message:'Test created',done:true,test});
+        } catch (error) {
+         console.log(error);   
+        }
     }
 
 })
@@ -236,11 +262,13 @@ router.post("/create-topic",authenticate,restrictTo("ADMIN"), async (req, res) =
     if(!subjectCode||!subjectName||!topicName||!contentOrder){
         res.status(422).json({error:" fill all the fields",done:false});
     }
-    try {
-        topic=Topic.create({subjectCode,subjectName,topicName,contentOrder});
-        res.status(200).json({message:'Topic created',done:true,topic});
-    } catch (error) {
-     console.log(error);   
+    else{
+        try {
+            topic=Topic.create({subjectCode,subjectName,topicName,contentOrder});
+            res.status(200).json({message:'Topic created',done:true,topic});
+        } catch (error) {
+         console.log(error);   
+        }
     }
 })
 router.post("/create-course",authenticate,restrictTo("ADMIN"), async (req, res) => {
@@ -248,18 +276,23 @@ router.post("/create-course",authenticate,restrictTo("ADMIN"), async (req, res) 
     if(!subjectCode||!subjectName||!courseName||!topics||!fees){
         res.status(422).json({error:" fill all the fields",done:false});
     }
-    try {
-        course=Course.create({subjectCode,subjectName,courseName,topics,fees});
-        res.status(200).json({message:'Course created',done:true,course});
-    } catch (error) {
-     console.log(error);   
+    else{
+        try {
+            course=Course.create({subjectCode,subjectName,courseName,topics,fees});
+            res.status(200).json({message:'Course created',done:true,course});
+        } catch (error) {
+         console.log(error);   
+        }
     }
 
 })
 //fetch all courses
 router.get('/courses',authenticate,restrictTo("ADMIN","TEACHER"),async (req,res)=>{
     try {
-        courses = await Course.find({})
+        courses = await Course.find({}).populate({
+            path: 'topics',
+            select:'topicName contentOrder _id',
+          })
         res.status(200).json({message:'Course list',done:true,courses});
     } catch (error) {
         console.log(error)
@@ -272,26 +305,28 @@ router.post("/courseFees/:courseId/cafe/:cafeId",authenticate,restrictTo("ADMIN"
     if(!amount){
         res.status(422).json({error:" provide a amount ",done:false});
     }
-    try {
-        course= await Course.findOne({_id:req.params.courseId});
-        //console.log(course);
-        course.fees = course.fees.filter(function(item) {
-            return item.cafe.toString() !== req.params.cafeId.toString()
-        })
-        course.fees.push({
-            cafe:req.params.cafeId,
-            amount:amount
-        })
-        course.save(function (err) {
-            if (err){
-                console.log(err);
-                return;
-            }  
-            res.status(200).json({message:'Course fees created or updated for cafe',done:true,fees:course.fees});
-          });  
-        
-    } catch (error) {
-     console.log(error);   
+    else{
+        try {
+            course= await Course.findOne({_id:req.params.courseId});
+            //console.log(course);
+            course.fees = course.fees.filter(function(item) {
+                return item.cafe.toString() !== req.params.cafeId.toString()
+            })
+            course.fees.push({
+                cafe:req.params.cafeId,
+                amount:amount
+            })
+            course.save(function (err) {
+                if (err){
+                    console.log(err);
+                    return;
+                }  
+                res.status(200).json({message:'Course fees created or updated for cafe',done:true,fees:course.fees});
+              });  
+            
+        } catch (error) {
+         console.log(error);   
+        }
     }
 }) 
 //update info of users
@@ -338,7 +373,7 @@ router.post('/generateReceipt/:userId',authenticate,restrictTo("ADMIN"),async (r
     try {
         user = await User.findById({_id: req.params.userId})
         const {amount,courseId,name}=req.body
-        //if amount in suffiecient then return
+        //if amount in suffiecient then
         //const name = `${user.firstName} ${user.lastName}` 
         receipt = await Receipt.create({amount,name,courseEnrolled:courseId})
         Receipt.create({amount,name,courseEnrolled:courseId}, function(err, newReceipt) {
@@ -357,6 +392,14 @@ router.post('/generateReceipt/:userId',authenticate,restrictTo("ADMIN"),async (r
          });
         
           
+    } catch (error) {
+        console.log(error)
+    }
+})
+router.post('/deleteUser/:userId',async (req,res)=>{
+    try {
+        deletedUser = await User.findByIdAndDelete({_id: req.params.userId})
+        res.status(200).json({message:'user deleted',done:true})
     } catch (error) {
         console.log(error)
     }

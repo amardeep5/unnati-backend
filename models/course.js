@@ -13,6 +13,10 @@ const courseSchema = new mongoose.Schema({
         type:String,
         required:[true, 'Please fill the course name !'],
     },
+    summary: {
+        type:String,
+        required:[true, 'Please fill the course summary !'],
+    },
     topics:[{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Topic"

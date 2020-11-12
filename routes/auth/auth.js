@@ -19,27 +19,27 @@ router.post("/login",async (req,res)=>{
               const passwordMatched = bcrypt.compare(password,savedUser.password)
               if(passwordMatched){
                 const token = jwt.sign({_id:savedUser._id},jwt_secret) 
-                const {username,email,_id,role,firstName,lastName,phoneNumber}=savedUser;
+                const {username,email,_id,firstName,lastName,phoneNumber,role}=savedUser;
                 if(role==='STUDENT'){
                     if(savedUser.isTeacherApproved){
-                        res.json({message:"Signed IN",token,user:{username,email,_id,firstName,lastName,phoneNumber},done:true})
+                        res.json({message:"Signed IN",token,user:{username,email,_id,firstName,lastName,phoneNumber,role},done:true})
                     }else if(savedUser.isTeacherRejected){
-                        res.json({message:"Your Application is Rejected",token,user:{username,email,_id,firstName,lastName,phoneNumber},done:true})
+                        res.json({message:"Your Application is Rejected",user:{username,email,_id,firstName,lastName,phoneNumber,role},done:true})
                     }else{
-                        res.json({message:"Your Application is under process process",token,user:{username,email,_id,firstName,lastName,phoneNumber},done:true})
+                        res.json({message:"Your Application is under process process",user:{username,email,_id,firstName,lastName,phoneNumber,role},done:true})
                     }
                 }else if(role==='TEACHER'){
                     if(savedUser.isAdminApproved){
-                        res.json({message:"Signed IN",token,user:{username,email,_id,firstName,lastName,phoneNumber},done:true})   
+                        res.json({message:"Signed IN",token,user:{username,email,_id,firstName,lastName,phoneNumber,role},done:true})   
                     }else{
                         if(savedUser.isAdminRejected){
-                            res.json({message:"Your Application is Rejected",token,user:{username,email,_id,firstName,lastName,phoneNumber},done:true})  
+                            res.json({message:"Your Application is Rejected",user:{username,email,_id,firstName,lastName,phoneNumber,role},done:true})  
                         }else{
-                            res.json({message:"Your Application is under Process",token,user:{username,email,_id,firstName,lastName,phoneNumber},done:true})
+                            res.json({message:"Your Application is under Process",user:{username,email,_id,firstName,lastName,phoneNumber,role},done:true})
                         }   
                     }
                 }else{
-                    res.json({message:"Signed IN",token,user:{username,email,_id,firstName,lastName,phoneNumber},done:true})
+                    res.json({message:"Signed IN",token,user:{username,email,_id,firstName,lastName,phoneNumber,role},done:true})
                 }  
               }else{
                 res.status(422).json({error:"Password or Email is incorrect",done:false}) 
@@ -64,8 +64,19 @@ router.post("/signup",async (req,res)=>{
             }else{
                 try {
                     const hashedPassword = await bcrypt.hash(password,12)
-                    const newUser = await User.create({email,username,password:hashedPassword,role,firstName,lastName,phoneNumber,cafe})
-                    res.json({message:"User created",user:newUser,done:true})
+                    if(role==='TEACHER'){
+                       teacherExist = await User.findOne({role: 'TEACHER',cafe})
+                       if(teacherExist){
+                        res.json({error:"Teacher already exist in this cafe ",done:false})
+                       }else{
+                        const newUser = await User.create({email,username,password:hashedPassword,role,firstName,lastName,phoneNumber,cafe})
+                        res.json({message:"User created",user:newUser,done:true})
+                       }
+                    }
+                    else{
+                        const newUser = await User.create({email,username,password:hashedPassword,role,firstName,lastName,phoneNumber,cafe})
+                        res.json({message:"User created",user:newUser,done:true})
+                    }
                 } catch (err) {
                     console.log(err)
                 }
