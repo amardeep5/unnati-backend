@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const mongoose= require('mongoose');
+
 require('./../../models/user');
 require('./../../models/topic');
 require('./../../models/test');
@@ -138,13 +139,13 @@ router.get("/waitingList-student",authenticate,restrictTo("ADMIN"),async (req,re
 })
 
 router.post("/create-cafe",authenticate,restrictTo("ADMIN"),async (req,res)=>{
-    const {location,address}=req.body;
-    if(!location&&!address){
+    const {location,address,name}=req.body;
+    if(!location&&!address&&!name){
         res.status(422).json({error:" location or address missing",done:false});
     }
     else{
         try {
-            const cafe = await Cafe.create({location,address})
+            const cafe = await Cafe.create({location,address,name})
             res.status(200).json({message:" cafe created",done:true,cafe});
         } catch (error) {
             console.log(error);
@@ -272,13 +273,13 @@ router.post("/create-topic",authenticate,restrictTo("ADMIN"), async (req, res) =
     }
 })
 router.post("/create-course",authenticate,restrictTo("ADMIN"), async (req, res) => {
-    const {subjectCode,subjectName,courseName,topics,fees}=req.body
+    const {subjectCode,subjectName,courseName,topics,fees,summary}=req.body
     if(!subjectCode||!subjectName||!courseName||!topics||!fees){
         res.status(422).json({error:" fill all the fields",done:false});
     }
     else{
         try {
-            course=Course.create({subjectCode,subjectName,courseName,topics,fees});
+            course=Course.create({subjectCode,subjectName,courseName,topics,fees,summary});
             res.status(200).json({message:'Course created',done:true,course});
         } catch (error) {
          console.log(error);   
@@ -362,21 +363,21 @@ router.get('/receipts/:userId',authenticate,restrictTo("ADMIN"),async (req,res) 
     try {
         receipts = await User.findById({_id: req.params.userId}).populate({
             path: 'receipts',
-            populate: { path: 'courseEnrolled', select: 'subjectCode subjectName courseName _id' }
+            populate: { path: 'courseEnrolled', select: 'subjectCode subjectName courseName _id summary' }
           }).select('receipts');  
           res.status(200).json({message:'user receipts',done:true,receipts:receipts.receipts});   
     } catch (error) {
         console.log(error)
     }
 })
-router.post('/generateReceipt/:userId',authenticate,restrictTo("ADMIN"),async (req,res) => {
+router.post('/generateReceipt/:userId/course/:courseId',authenticate,restrictTo("ADMIN"),async (req,res) => {
     try {
         user = await User.findById({_id: req.params.userId})
-        const {amount,courseId,name}=req.body
+        const {amount,name}=req.body
         //if amount in suffiecient then
         //const name = `${user.firstName} ${user.lastName}` 
-        receipt = await Receipt.create({amount,name,courseEnrolled:courseId})
-        Receipt.create({amount,name,courseEnrolled:courseId}, function(err, newReceipt) {
+        receipt = await Receipt.create({amount,name,courseEnrolled:req.params.courseId})
+        Receipt.create({amount,name,courseEnrolled:req.params.courseId}, function(err, newReceipt) {
              if (err) {
                  console.log(err);
              } else {

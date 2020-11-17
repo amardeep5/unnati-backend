@@ -15,7 +15,6 @@ const courseSchema = new mongoose.Schema({
     },
     summary: {
         type:String,
-        required:[true, 'Please fill the course summary !'],
     },
     topics:[{
         type: mongoose.Schema.Types.ObjectId,
