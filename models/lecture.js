@@ -1,8 +1,11 @@
 const mongoose = require('mongoose')
 const lectureSchema = new mongoose.Schema({
-
-    // to be completed 
-    
+ 
+    youtubeId:{
+        type:String,
+        required:true
+    },
+    name:{ type: String},
     createdAt: { type: Date, default: Date.now },
 
 })
