@@ -12,7 +12,7 @@
 
 ### /waitingList-teacher -----> FOR SHOWING LIST OF ALL UNAPPROVED TEACHERS
 
-### /waitingList-student -----> FOR SHOWING LIST OF ALL UNAPPROVED STUDENTS
+### /waitingList-student -----> FOR SHOWING LIST OF ALL UNAPPROVED STUDENTS FROM ADMIN OR TEACHER
 
 ### /create-cafe -----> FOR CREATING CAFE FROM ADMIN
 
@@ -47,3 +47,13 @@
 ### /receipts/:userId -----> FOR SHOWING ALL RECEIPTS OF A USER FOR ADMIN , STUDENT AND TEACHER
 
 ### /generateReceipt/:userId -----> FOR GENERATING RECEIPT FOR A USER FOR ADMIN
+
+### /cafeStudents/:cafeId -----> FOR STUDENT'S LIST ALONG WITH COURSES ENROLLED FOR TEACHER
+
+### /studentCompletionRate/:userId/cafe/:cafeId -----> FOR STUDENTS COMPLETION RATE AND MARKS
+
+### /requestTestEvaluate/:testId -----> FOR CHECKING AND SCORING STUDENT FOR TEACHER
+
+### /enterMarks/:courseEnrolled/test/:testId -----> FOR UPDATING SCORE IN DATABASE FOR TEACHER
+
+### /loadPendingEvaluations/:cafeId/course/:courseId -----> LOAD ALL PENDING TEST EVALUATIONS FOR TEACHER
