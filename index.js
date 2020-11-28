@@ -3,7 +3,7 @@ const app = express()
 const mongoose= require('mongoose')
 const cors=require('cors');
 
-require('dotenv').config()
+require('dotenv').config() 
 require('./models/user');
 
 const User = mongoose.model('User');
@@ -13,6 +13,7 @@ app.use(cors());
 app.use(express.json())
 app.use(require('./routes/auth/auth'))
 app.use(require('./routes/admin/index'))
+app.use(require('./routes/student/index'))
 
 // app.get("/",authenticate,(req,res)=>{
 //     res.send("its Protected")

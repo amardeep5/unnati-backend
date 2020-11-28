@@ -20,12 +20,10 @@ const courseEnrolledSchema = new mongoose.Schema({
         },
         marksScored:{
             type:Number,
-            required:[true, 'Please fill the maximum marks of test!'],
         },
         attemptsLeft:{
             type:Number,
             default:3,
-            required:[true, 'Please fill the maximum marks of test!'],
         }
     }],
     testsDone:[{
@@ -35,7 +33,7 @@ const courseEnrolledSchema = new mongoose.Schema({
         },
         marksScored:{
             type:Number,
-            required:[true, 'Please fill the maximum marks of test!'],
+            default:-1
         },
         responseSheet:{
             type: mongoose.Schema.Types.ObjectId,
@@ -46,10 +44,10 @@ const courseEnrolledSchema = new mongoose.Schema({
             type: mongoose.Schema.Types.ObjectId,
             ref: "Lecture"
     }],
-    topicsDone:[{
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Topic"
-    }],
+    // topicsDone:[{
+    //         type: mongoose.Schema.Types.ObjectId,
+    //         ref: "Topic"
+    // }],
     createdAt: { type: Date, default: Date.now },
 })
 mongoose.model('CourseEnrolled',courseEnrolledSchema)

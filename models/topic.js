@@ -15,7 +15,7 @@ const topicSchema = new mongoose.Schema({
     topicName: {
         type:String,
         required:[true, 'Please fill the topic name !'],
-    },
+    }, 
     contentOrder:[{ 
         id:{
             type: mongoose.Schema.Types.ObjectId,

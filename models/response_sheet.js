@@ -12,16 +12,17 @@ const responseSheetSchema = new mongoose.Schema({
     },
     score:{
         type:Number,
-        required:[true, 'Please enter score achieved!']
+        default:-1,
+        // required:[true, 'Please enter score achieved!']
     },
-    max_score: {
-        type:Number,
-        required:[true, 'Please fill the max_score!'],
-    },
-    max_time: {
-        type:Number,
-        required:[true, 'Please fill the max_time or duration!'],
-    },
+    // max_score: {
+    //     type:Number,
+    //     required:[true, 'Please fill the max_score!'],
+    // },
+    // max_time: {
+    //     type:Number,
+    //     required:[true, 'Please fill the max_time or duration!'],
+    // },
     responses:[{
         type:mongoose.Schema.Types.ObjectId,
         ref:"Response"
