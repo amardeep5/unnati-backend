@@ -4,6 +4,14 @@ const responseSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Question"
     },
+    userId:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
+    },
+    testId:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Test"
+    },
     response: {
         type:String,
         required:[true, 'Please fill the response!'],
