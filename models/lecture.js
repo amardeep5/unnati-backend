@@ -11,6 +11,7 @@ const lectureSchema = new mongoose.Schema({
         required: 'URL can\'t be empty',
         unique: true
     },
+    dueDays:{type:Number,default:7},
     createdAt: { type: Date, default: Date.now },
 
 })

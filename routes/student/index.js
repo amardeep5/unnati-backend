@@ -31,6 +31,7 @@ const Assignment = mongoose.model('Assignment');
 const authenticate = require('./../../middleware/authenticate')
 const restrictTo = require('./../../middleware/restrictTo')
 
+// all courses list
 router.get("/all-courses",async (req,res) => {
     try {
         const courses = await Course.find({})
@@ -39,6 +40,7 @@ router.get("/all-courses",async (req,res) => {
         console.log(error);
     }
 })
+// info of course in a cafe (loggin)
 router.get("/cafe/:cafeId/coursedetail/:courseId",async (req,res) => {
     try {
         var course = await Course.findOne({_id: req.params.courseId}).populate({
@@ -97,7 +99,7 @@ router.get("/cafe/:cafeId/coursedetail/:courseId",async (req,res) => {
 //         console.log(error);
 //     }
 // })
-
+// all user past receipts 
 router.get("/user-receipts/:userId",async (req,res)=>{
     try {
         const userReceipts = await User.findOne({_id: req.params.userId}).populate({path:'receipts', populate:{path:'courseEnrolled',select:'courseName'}}).select('receipts')
@@ -107,10 +109,10 @@ router.get("/user-receipts/:userId",async (req,res)=>{
     }
 
 })
-router.get("/coursesFees/:userId/cafe/:cafeId",async (req,res)=>{
+// fees status of each enrolled course of a user
+router.get("/coursesFeesStatus/:userId/cafe/:cafeId",async (req,res)=>{
     try {
         const courses = await CourseEnrolled.find({user: req.params.userId}).populate({path:'course',select:'courseName fees'}).select('course feesPaid')
-        fees
         courses.forEach(course => {
             course.fees.forEach(fee => {
                 if(fee.cafe.toString()===req.params.cafeId.toString()){
@@ -124,6 +126,7 @@ router.get("/coursesFees/:userId/cafe/:cafeId",async (req,res)=>{
     }
 
 })
+// enroll a user in a course 
 router.post("/user/:userId/courseEnroll/:courseId",async (req,res)=>{
     const course = await CourseEnrolled.create({user:req.params.userId,course:req.params.courseId})
     const user = await User.findOne({_id:req.params.userId})
@@ -136,6 +139,7 @@ router.post("/user/:userId/courseEnroll/:courseId",async (req,res)=>{
     })
     res.status(200).json({done: true,message:'User enrolled in courses'})
 })
+// pay fees of a course and add it to receipts of user
 router.post("/user/:userId/courseFeeUpdate/:courseId",async (req,res)=>{
     const course = await CourseEnrolled.findOne({user:req.params.userId,course:req.params.courseId})
     course.feesPaid = true
@@ -155,7 +159,7 @@ router.post("/user/:userId/courseFeeUpdate/:courseId",async (req,res)=>{
     })
     res.status(200).json({done: true,message:'User enrolled  course fees paid '})
 })
-
+// list of all enrolled courses
 router.get("/enrolled-courses/:userId",async (req,res) => {
     try {
         const userCourses = await User.find({_id: req.params.userId}).populate({
@@ -165,8 +169,26 @@ router.get("/enrolled-courses/:userId",async (req,res) => {
                 select: '_id courseName'
             }
         }).select("courseEnrolled")
-        if(userCourses){ 
-            res.status(200).json({done: true,userCourses,message:'All User Courses with ids'})
+        if(userCourses){
+            var percentStatus = [];
+
+            for (const userCourse of userCourses){
+                const course = await Course.findOne({_id: userCourse._id}).populate({
+                    path: 'topics',
+                    select:'_id topicName contentOrder',
+                }).select("subjectCode subjectName courseName summary topics")
+                var totalLength = 0,calcLength=0;
+                for(const topic of courses.topics){
+                    totalLength = totalLength + topic.contentOrder.length;
+                }
+                courseEnrolled = await CourseEnrolled.findOne({user : req.params.userId, course:userCourse._id})
+                if(courseEnrolled){
+                    calcLength = calcLength + courseEnrolled.assignmentsDone.length + courseEnrolled.testsDone + courseEnrolled.lecturesDone
+                }
+                var percentDone = (calcLength / totalLength)*100 
+                percentStatus.push(percentDone);
+            }
+            res.status(200).json({done: true,userCourses, percentStatus,message:'All User Courses with ids'})
         }else{
             res.status(422).json({done: false,message: 'User not found'})
         }
@@ -179,68 +201,58 @@ router.get("/enrolled-courses/:userId",async (req,res) => {
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
-
+// opens the details of a course like lecture , tests and assignment
 router.get("/enrolled-course/:userId/course/:courseId",async (req,res) => {
     try {
         const course = await Course.findOne({_id: req.params.courseId}).populate({
             path: 'topics',
             select:'_id topicName contentOrder',
-        }).select("subjectCode subjectName courseName summary topics")
-        var tests = []
-        var assignments = []
-        var totalLength = 0,calcLength=0;
-        for (const topic of course.topics){
-            totalLength = totalLength + topic.contentOrder.length
-            for (const content of topic.contentOrder){
-                if(content.content==='TEST'){
-                    console.log("test")
-                    var test = await Test.findOne({_id:content.id}).select("_id testName")
-                    tests.push(test)
-                }else if(content.content==='ASSIGNMENT'){
-                    var assignment = await Assignment.findOne({_id:content.id}).select("_id assignmentName")
-                    assignments.push(assignment)
-                    console.log("ass")        
-                }
-            }              
-        };
-        courseEnrolled = await CourseEnrolled.findOne({user : req.params.userId, course:req.params.courseId})
-        if(courseEnrolled){
-            calcLength = calcLength + courseEnrolled.assignmentsDone.length + courseEnrolled.testsDone + courseEnrolled.lecturesDone
-        }
-        console.log("tL",totalLength)
-        var percentDone = (calcLength / totalLength)*100 
-        res.status(200).json({done: true,course,tests,assignments,percentDone})
+        }).select("courseName topics")
+    
+        res.status(200).json({done: true,course})
     } catch (error) {
         console.log(error);
     }
 })
 
-router.get("/enrolled-course/:userId/course/:courseId/topic/:topicId",async (req,res) => {
-    try {
-        var topic = await Topic.findOne({_id: req.params.topicId})
-        // console.log(topic)
-        // for (var content of topic['contentOrder']){
-        //     if(content.content==='TEST'){
-        //         test = await Test.findOne({_id:content.id}).select("_id testName")
-        //         content.name = test.testName
-        //     }else if(content.content==='ASSIGNMENT'){
-        //         assignment = await Assignment.find({_id:content.id}).select("_id assignmentName")
-        //         content.name = assignment.assignmentName
-        //     }else{
-        //         lecture = await Lecture.findOne({_id:content.id}).select("_id lectureName")
-        //         contentOrder.name = lecture.lectureName
-        //     }
-        // }
-        res.status(200).json({done: true,topic})
-    } catch (error) {
-        console.log(error);
-    }
-})
+// // router.get("/enrolled-course/:userId/course/:courseId/topic/:topicId",async (req,res) => {
+// //     try {
+// //         var topic = await Topic.findOne({_id: req.params.topicId})
+//         console.log(topic)
+//         for (var content of topic['contentOrder']){
+//             if(content.content==='TEST'){
+//                 test = await Test.findOne({_id:content.id}).select("_id testName")
+//                 content.name = test.testName
+//             }else if(content.content==='ASSIGNMENT'){
+//                 assignment = await Assignment.find({_id:content.id}).select("_id assignmentName")
+//                 content.name = assignment.assignmentName
+//             }else{
+//                 lecture = await Lecture.findOne({_id:content.id}).select("_id lectureName")
+//                 contentOrder.name = lecture.lectureName
+//             }
+//         }
+// //         res.status(200).json({done: true,topic})
+// //     } catch (error) {
+// //         console.log(error);
+// //     }
+// // })
 
 router.get("/enrolled-course/:userId/course/:courseId/lecture/:lectureId",async (req,res)=>{
     try {
         const lecture = await Lecture.findOne({_id:req.params.lectureId})
         if(lecture){
+            try {
+                enrolledCourse = await CourseEnrolled.findOne({user : req.params.userId, course:req.params.courseId})
+                enrolledCourse.lecturesDone.push(lectureId)
+                enrolledCourse.save(err=>{
+                    if(err){
+                        console.log(err)
+                        return;
+                    }
+                })
+            } catch (error) {
+                console.log(error);
+            }
             res.status(200).json({done: true,lecture})
         }else{
             res.status(422).json({done: false,message: 'Lecture not found'})
@@ -338,13 +350,9 @@ router.post('/enrolled-course/:userId/course/:courseId/assignment/:assignmentId'
         if(!done){
             enrolledCourse.assignmentsDone.push({assignment:req.params.assignmentId, marksScored:marksScored,attemptsLeft:2})
         }
-        // else{
-        //     console.log("else  ",attemptsLeft,marksScored)
-        //     enrolledCourse.assignmentsDone.push({assignment:req.params.assignmentId, marksScored:marksScored,attemptsLeft})
-        // }
         enrolledCourse.save(err=>{
             if(err){
-                console.log("fchgtcujgcujvjgvjgvhgvFFFFFFFF",err)
+                console.log(err)
                 return;
             }
         })
@@ -358,6 +366,10 @@ router.post('/enrolled-course/:userId/course/:courseId/assignment/:assignmentId'
 router.post('/submit-response/user/:userId/test/:testId/question/:questionId',async (req,res)=>{
     try {
         const {response} = req.body
+        const prevSaved = await Response.findOne({questionId : req.params.questionId , userId:req.params.userId ,testId:req.params.testId})
+        if(prevSaved){
+            await Response.deleteOne({questionId : req.params.questionId , userId:req.params.userId ,testId:req.params.testId})    
+        } 
         const savedResponse = await Response.create({questionId : req.params.questionId , userId:req.params.userId ,testId:req.params.testId, response})
         res.status(200).json({done:true,message:"response saved"})
     } catch (error) {
@@ -387,7 +399,7 @@ router.post('/enrolled-course/:userId/course/:courseId/test/:testId',async (req,
         console.log(error);
     }
 })
-
+// if onclick lecture is not considered done 
 router.post('/enrolled-course/:userId/course/:courseId/lecture/:lectureId',async (req,res)=>{
     try {
         enrolledCourse = await CourseEnrolled.findOne({user : req.params.userId, course:req.params.courseId})
@@ -403,4 +415,5 @@ router.post('/enrolled-course/:userId/course/:courseId/lecture/:lectureId',async
         console.log(error);
     }
 })
+
 module.exports=router

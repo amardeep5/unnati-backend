@@ -9,6 +9,7 @@ const questionSchema = new mongoose.Schema({
         enum: ['SINGLECORRECT','MULTICORRECT','TYPED'],
         required:[true, 'Please enter type of question!']
     },
+    name:{type:String},
     statement: {
         type:String,
         required:[true, 'Please fill the question statement!'],

@@ -24,8 +24,10 @@ const topicSchema = new mongoose.Schema({
         content:{
             type:String,
             enum:['ASSIGNMENT','TEST','LECTURE'],
+            name: String,
             required:[true, 'Please fill the content type !'],
-        }
+        },
+        dueDays:{type:Number,default:7},
     }],
     
     createdAt: { type: Date, default: Date.now },
