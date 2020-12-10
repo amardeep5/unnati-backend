@@ -163,33 +163,29 @@ router.post("/user/:userId/courseFeeUpdate/:courseId",async (req,res)=>{
 // list of all enrolled courses
 router.get("/enrolled-courses/:userId",async (req,res) => {
     try {
-        const userCourses = await User.find({_id: req.params.userId}).populate({
-            path:'courseEnrolled',
+        var userCourses = await User.findOne({_id: req.params.userId}).populate({
+            path:'coursesEnrolled',
             populate : {
                 path: 'course' , 
-                select: '_id courseName'
+                populate: { path: 'topics', select:'contentOrder'},
+                select: '_id courseName topics',
             }
         }).select("courseEnrolled")
-        if(userCourses){
+        // console.log(userCourses);
+         if(userCourses){
             var percentStatus = [];
 
-            for (const userCourse of userCourses){
-                const course = await Course.findOne({_id: userCourse._id}).populate({
-                    path: 'topics',
-                    select:'_id topicName contentOrder',
-                }).select("subjectCode subjectName courseName summary topics")
+            for (const userCourse of userCourses.coursesEnrolled){
                 var totalLength = 0,calcLength=0;
-                for(const topic of courses.topics){
+                for(const topic of userCourse.course.topics){
                     totalLength = totalLength + topic.contentOrder.length;
                 }
-                courseEnrolled = await CourseEnrolled.findOne({user : req.params.userId, course:userCourse._id})
-                if(courseEnrolled){
-                    calcLength = calcLength + courseEnrolled.assignmentsDone.length + courseEnrolled.testsDone + courseEnrolled.lecturesDone
-                }
+                    calcLength = calcLength + userCourse.assignmentsDone.length + userCourse.testsDone.length + userCourse.lecturesDone.length
                 var percentDone = (calcLength / totalLength)*100 
                 percentStatus.push(percentDone);
-            }
-            res.status(200).json({done: true,userCourses, percentStatus,message:'All User Courses with ids'})
+           }
+           userCourses = userCourses.coursesEnrolled
+            res.status(200).json({done: true,userCourses,percentStatus,message:'All User Courses with ids'})
         }else{
             res.status(422).json({done: false,message: 'User not found'})
         }
@@ -198,19 +194,69 @@ router.get("/enrolled-courses/:userId",async (req,res) => {
         console.log(error);
     }
 })
+// list of unenrolled courses
+var removeByAttr = function(arr, attr, value){
+    var i = arr.length;
+      
+    while(i--){
+        if( arr[i] 
+        //    && arr[i].hasOwnProperty(attr) 
+           && (arguments.length > 2 && arr[i][attr] === value.toString() ) ){ 
+            // console.log("yoyoy",arr[i][attr]);
+           arr.splice(i,1);
 
+       }
+    }
+    console.log("func",arr);
+    return arr;
+}
+router.get("/unenrolled-courses/:userId",async (req,res) => {
+    try {
+        var userCourses = await User.findOne({_id: req.params.userId}).populate({
+            path:'coursesEnrolled',
+            populate : {
+                path: 'course' , 
+                select: '_id courseName',
+            },
+            select:'course'
+        }).select("courseEnrolled")
+        userCourses = userCourses.coursesEnrolled
+         if(userCourses){
+            var courses = await Course.find({}).select('courseName _id'); 
+            for (const course of courses){
+                for (const obj of userCourses) {
+                    if(obj.course._id.toString()===course._id.toString()){
+                        courses = removeByAttr(courses, 'courseName', course.courseName);
+                    }
+                }
+           }
+            res.status(200).json({done: true,courses,message:'All User Unenrolled Courses with ids'})
+        }else{
+            res.status(422).json({done: false,message: 'User not found'})
+        }
+        
+    } catch (error) {
+        console.log(error);
+    }
+})
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 // opens the details of a course like lecture , tests and assignment
 router.get("/enrolled-course/:userId/course/:courseId",async (req,res) => {
     try {
-        const course = await Course.findOne({_id: req.params.courseId}).populate({
+        let response = {done: true}
+        response['course'] = await Course.findOne({_id: req.params.courseId}).populate({
             path: 'topics',
             select:'_id topicName contentOrder',
         }).select("courseName topics")
-    
-        res.status(200).json({done: true,course})
+        // for (let i=0; i<response.course.topics.length; i++) {
+        //     for (let j=0; j<response.course.topics[i].contentOrder.length; j++) {
+        //         // console.log("yes",course['topics'][i]);
+        //     }
+        // }
+        response.course['done'] = false;
+        res.status(200).json(response)
     } catch (error) {
         console.log(error);
     }
@@ -242,18 +288,6 @@ router.get("/enrolled-course/:userId/course/:courseId/lecture/:lectureId",async 
     try {
         const lecture = await Lecture.findOne({_id:req.params.lectureId})
         if(lecture){
-            try {
-                enrolledCourse = await CourseEnrolled.findOne({user : req.params.userId, course:req.params.courseId})
-                enrolledCourse.lecturesDone.push(lectureId)
-                enrolledCourse.save(err=>{
-                    if(err){
-                        console.log(err)
-                        return;
-                    }
-                })
-            } catch (error) {
-                console.log(error);
-            }
             res.status(200).json({done: true,lecture})
         }else{
             res.status(422).json({done: false,message: 'Lecture not found'})
