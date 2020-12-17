@@ -102,13 +102,13 @@ router.get("/cafe/:cafeId/coursedetail/:courseId",async (req,res) => {
 //     }
 // })
 // cafe info with no. of students in cafe 
-router.get('/cafeinfo/:cafeId',async (req,res)=>{
+router.get('/cafeinformation/:cafeId',async (req,res)=>{
     try {
         const cafe  = await Cafe.findOne({ _id: req.params.cafeId})
         if(cafe){
             const users = await User.find({cafe: req.params.cafeId}).select('username role')
             if(users){
-                res.json({done: true,cafe,userNumbers : users.length-2,users})
+                res.json({done: true,cafe,userNumbers : users.length-1,users})
             }else{
                 res.json({done: false,message: ' no users found'})    
             }
@@ -339,7 +339,7 @@ router.get("/enrolled-course/:userId/course/:courseId/test/:testId",async (req,r
         })
         if(!done){
             test = await Test.findOne({_id:req.params.testId}).populate({path:'questions',select:'-correctAns'})
-            console.log(test)
+            // console.log(test)
             if(test){
                 res.status(200).json({done: true,test})
             }else{
