@@ -35,6 +35,14 @@ const userSchema = new mongoose.Schema({
         type:String,
         enum: ['STUDENT','ADMIN','TEACHER']
     },
+    paidAmount:{
+        type:Number,
+        default:0
+    },
+    dueAmount:{
+        type:Number,
+        default:0
+    },
     isAdminApproved:{
         type:Boolean,
         default:false

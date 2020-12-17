@@ -10,10 +10,10 @@ const courseEnrolledSchema = new mongoose.Schema({
         ref: "Course"
     },
     fee:{ type: Number},
-    feesPaid:{
-        type:Boolean,
-        default:false
-    },
+    // feesPaid:{
+    //     type:Boolean,
+    //     default:false
+    // },
     assignmentsDone:[{
         assignment:{
             type: mongoose.Schema.Types.ObjectId,
@@ -45,10 +45,10 @@ const courseEnrolledSchema = new mongoose.Schema({
             type: mongoose.Schema.Types.ObjectId,
             ref: "Lecture"
     }],
-    topicsDone:[{
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Topic"
-    }],
+    // topicsDone:[{
+    //         type: mongoose.Schema.Types.ObjectId,
+    //         ref: "Topic"
+    // }],
     createdAt: { type: Date, default: Date.now },
 })
 mongoose.model('CourseEnrolled',courseEnrolledSchema)

@@ -21,9 +21,9 @@ router.post("/login",async (req,res)=>{
                 const token = jwt.sign({_id:savedUser._id},jwt_secret) 
                 const {username,email,_id,firstName,lastName,phoneNumber,role}=savedUser;
                 if(role==='STUDENT'){
-                    if(savedUser.isTeacherApproved){
+                    if(savedUser.isTeacherApproved || savedUser.isAdminApproved){
                         res.json({message:"Signed IN",token,user:{username,email,_id,firstName,lastName,phoneNumber,role},done:true})
-                    }else if(savedUser.isTeacherRejected){
+                    }else if(savedUser.isTeacherRejected || savedUser.isAdminRejected){
                         res.json({message:"Your Application is Rejected",user:{username,email,_id,firstName,lastName,phoneNumber,role},done:true})
                     }else{
                         res.json({message:"Your Application is under process process",user:{username,email,_id,firstName,lastName,phoneNumber,role},done:true})
@@ -54,7 +54,7 @@ router.post("/login",async (req,res)=>{
 
 router.post("/signup",async (req,res)=>{
     const {username,email,password,role,firstName,lastName,phoneNumber,cafe}=req.body;
-    if(!email || !password || !username || !firstName || !lastName || !phoneNumber || !role){
+    if(!email || !password || !username || !firstName || !lastName || !phoneNumber || !role || !cafe){
         res.status(422).json({error:"Please add all the details",done:false})
     }else{ 
         try {
@@ -86,7 +86,5 @@ router.post("/signup",async (req,res)=>{
         }
     }
 })
-
-
 
 module.exports=router

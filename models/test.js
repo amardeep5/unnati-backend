@@ -8,9 +8,9 @@ const testSchema = new mongoose.Schema({
         type:String,
         required:[true, 'Please enter valid subject name!']
     },
-    serialNumber:{
-        type:Number,
-    },
+    // serialNumber:{
+    //     type:Number,
+    // },
     testName: {
         type:String,
         required:[true, 'Please fill the topic of test!'],

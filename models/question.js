@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 const questionSchema = new mongoose.Schema({
     correctAns:[{
         type:String,
-        required:[true, 'Please enter encoded answer string!']
+        // required:[true, 'Please enter encoded answer string!']
     }],
     type:{
         type:String,
