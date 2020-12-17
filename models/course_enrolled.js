@@ -9,7 +9,7 @@ const courseEnrolledSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Course"
     },
-    fee:{ type: Number},
+    // fee:{ type: Number},
     // feesPaid:{
     //     type:Boolean,
     //     default:false
