@@ -19,27 +19,27 @@ router.post("/login",async (req,res)=>{
               const passwordMatched = bcrypt.compare(password,savedUser.password)
               if(passwordMatched){
                 const token = jwt.sign({_id:savedUser._id},jwt_secret) 
-                const {username,email,_id,firstName,lastName,phoneNumber,role}=savedUser;
+                const {username,email,_id,firstName,lastName,phoneNumber,role,cafe}=savedUser;
                 if(role==='STUDENT'){
                     if(savedUser.isTeacherApproved || savedUser.isAdminApproved){
-                        res.json({message:"Signed IN",token,user:{username,email,_id,firstName,lastName,phoneNumber,role},done:true})
+                        res.json({message:"Signed IN",token,user:{username,email,_id,firstName,lastName,phoneNumber,role,cafe},done:true})
                     }else if(savedUser.isTeacherRejected || savedUser.isAdminRejected){
-                        res.json({message:"Your Application is Rejected",user:{username,email,_id,firstName,lastName,phoneNumber,role},done:true})
+                        res.json({message:"Your Application is Rejected",user:{username,email,_id,firstName,lastName,phoneNumber,role,cafe},done:true})
                     }else{
-                        res.json({message:"Your Application is under process process",user:{username,email,_id,firstName,lastName,phoneNumber,role},done:true})
+                        res.json({message:"Your Application is under process process",user:{username,email,_id,firstName,lastName,phoneNumber,role,cafe},done:true})
                     }
                 }else if(role==='TEACHER'){
                     if(savedUser.isAdminApproved){
-                        res.json({message:"Signed IN",token,user:{username,email,_id,firstName,lastName,phoneNumber,role},done:true})   
+                        res.json({message:"Signed IN",token,user:{username,email,_id,firstName,lastName,phoneNumber,role,cafe},done:true})   
                     }else{
                         if(savedUser.isAdminRejected){
-                            res.json({message:"Your Application is Rejected",user:{username,email,_id,firstName,lastName,phoneNumber,role},done:true})  
+                            res.json({message:"Your Application is Rejected",user:{username,email,_id,firstName,lastName,phoneNumber,role,cafe},done:true})  
                         }else{
-                            res.json({message:"Your Application is under Process",user:{username,email,_id,firstName,lastName,phoneNumber,role},done:true})
+                            res.json({message:"Your Application is under Process",user:{username,email,_id,firstName,lastName,phoneNumber,role,cafe},done:true})
                         }   
                     }
                 }else{
-                    res.json({message:"Signed IN",token,user:{username,email,_id,firstName,lastName,phoneNumber,role},done:true})
+                    res.json({message:"Signed IN",token,user:{username,email,_id,firstName,lastName,phoneNumber,role,cafe},done:true})
                 }  
               }else{
                 res.status(422).json({error:"Password or Email is incorrect",done:false}) 
