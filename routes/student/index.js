@@ -284,7 +284,7 @@ router.get("/enrolled-course/:userId/course/:courseId",async (req,res) => {
         //         // console.log("yes",course['topics'][i]);
         //     }
         // }
-        var courseResponse = await EnrolledCourse.findOne({user:req.params.userId,course:req.params.courseId});
+        var courseResponse = await CourseEnrolled.findOne({user:req.params.userId,course:req.params.courseId});
         response.courseResponse=courseResponse
         // response.course['done'] = false;
         res.status(200).json(response)
