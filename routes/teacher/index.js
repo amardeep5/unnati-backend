@@ -103,6 +103,11 @@ router.post("/loadPendingEvaluations/:cafeId/course/:courseId",authenticate,rest
             message:"list of pending evaluations",
             done:true,
         }
+
+        let pendingUsers = await CourseEnrolled.find({course:req.params.courseId}).populate({
+            path: 'user'
+        })
+
         res.status(200).json(response)
     } catch (error) {
         console.log(error);
