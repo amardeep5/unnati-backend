@@ -142,26 +142,26 @@ router.get("/FeesStatus/:userId/cafe/:cafeId",async (req,res)=>{
 
 })
 // enroll a user in a course 
-// router.post("/user/:userId/cafe/:cafeId/courseEnroll/:courseId",async (req,res)=>{
-//     const c =  await Course.findOne({_id: req.params.courseId})
-//     const fee = 0;
-//     c.fees.forEach(fee =>{
-//         if(fee.cafe.toString()==req.params.cafeId.toString()){
-//             fee=fee.amount
-//         }
-//     })
-//     const course = await CourseEnrolled.create({user:req.params.userId,course:req.params.courseId,fee})
-//     const user = await User.findOne({_id:req.params.userId})
-//     user.dueAmount+=fee;
-//     user.coursesEnrolled.push(course._id)
-//     user.save(err => {
-//         if(err){
-//             console.log(err)
-//             return
-//         }
-//     })
-//     res.status(200).json({done: true,message:'User enrolled in courses'})
-// })
+router.post("/user/:userId/cafe/:cafeId/courseEnroll/:courseId",async (req,res)=>{
+    const c =  await Course.findOne({_id: req.params.courseId})
+    const fee = 0;
+    c.fees.forEach(fee =>{
+        if(fee.cafe.toString()==req.params.cafeId.toString()){
+            fee=fee.amount
+        }
+    })
+    const course = await CourseEnrolled.create({user:req.params.userId,course:req.params.courseId,fee})
+    const user = await User.findOne({_id:req.params.userId})
+    user.dueAmount+=fee;
+    user.coursesEnrolled.push(course._id)
+    user.save(err => {
+        if(err){
+            console.log(err)
+            return
+        }
+    })
+    res.status(200).json({done: true,message:'User enrolled in courses'})
+})
 // pay fees of a course and add it to receipts of user
 // router.post("/user/:userId/courseFeeUpdate/:courseId",async (req,res)=>{
 //     const course = await CourseEnrolled.findOne({user:req.params.userId,course:req.params.courseId})

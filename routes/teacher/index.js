@@ -1,3 +1,4 @@
+const { response } = require('express');
 const express = require('express');
 const router = express.Router();
 const mongoose= require('mongoose');
@@ -62,6 +63,7 @@ router.post("/cafeStudents/:cafeId",authenticate,restrictTo("TEACHER"),async (re
     }
 })
 
+// request answer sheet for evaluation
 router.post("/requestTestEvaluate/:responseSheetId",authenticate,restrictTo("TEACHER"),async (req,res) => {
     try {
         data = await ResponseSheet.findById({_id: req.params.responseSheetId}).populate({
@@ -76,27 +78,24 @@ router.post("/requestTestEvaluate/:responseSheetId",authenticate,restrictTo("TEA
     }
 })
 
-router.post("/enterMarks/:courseEnrolled/test/:testId/marks/:marks",authenticate,restrictTo("TEACHER"),async (req,res) => {
+
+// add score to the database
+router.post("/evaluateTest/:responseSheetId",authenticate,restrictTo("TEACHER"),async (req,res) => {
     try {
-        let response = {
-            message:"adding mask to DB",
-            done:true,
-        }
-        const courseDetails = await CourseEnrolled.findById({_id: req.params.courseEnrolled})
-        courseDetails.
-        teacher.isAdminRejected=true
-        teacher.save(function (err) {
+        responseSheet = await ResponseSheet.findById({_id: req.params.responseSheetId})
+        responseSheet.score = req.body.score
+        responseSheet.save(function (err) {
             if (err){
                 console.log(err);
                 return;
             }  
-            res.status(200).json({message:"teacher rejected",done:true});
+            res.status(200).json({message:"Marks are added!",done:true});
         }); 
-        res.status(200).json(response)
     } catch (error) {
         console.log(error);
     }
 })
+
 
 router.post("/loadPendingEvaluations/:cafeId/course/:courseId",authenticate,restrictTo("TEACHER"),async (req,res) => {
     try {
