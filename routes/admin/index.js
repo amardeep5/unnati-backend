@@ -51,7 +51,7 @@ router.post("/teacherApproval/:id",/*authenticate,restrictTo("ADMIN"),*/async (r
         console.log(error);
     }
 })
-router.post("/studentApproval/:id",/*authenticate,*/restrictTo("ADMIN","TEACHER"),async (req,res) => {
+router.post("/studentApproval/:id",/*authenticate,restrictTo("ADMIN","TEACHER"),*/async (req,res) => {
     try {
         const student = await User.findById({_id: req.params.id})
         if(student){
@@ -183,6 +183,12 @@ router.get("/detailedInfo/:userId",/*authenticate,restrictTo("ADMIN"),*/async (r
 router.post("/courseAccess/:userId/course/:courseId",/*authenticate,restrictTo("ADMIN"),*/async (req,res) => {
     try {
         const teacher = await User.findOne({_id: req.params.userId,role:'TEACHER'});
+        for (const id of teacherAccessCourses) {
+            if(id.toString()===req.params.courseId.toString()){
+                res.status(422).json({message:`access has already been given to teacher ${teacher.firstName}`,done:false});
+                return
+            }
+        }
         teacher.teacherAccessCourses.push(req.params.courseId);
         teacher.save(function (err) {
             if (err){

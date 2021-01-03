@@ -10,11 +10,11 @@ const responseSheetSchema = new mongoose.Schema({
         ref:"Test",
         required:[true, 'Please enter test id!']
     },
-    score:{
-        type:Number,
-        default:-1,
-        // required:[true, 'Please enter score achieved!']
-    },
+    // score:{
+    //     type:Number,
+    //     default:-1,
+    //     // required:[true, 'Please enter score achieved!']
+    // },
     // max_score: {
     //     type:Number,
     //     required:[true, 'Please fill the max_score!'],

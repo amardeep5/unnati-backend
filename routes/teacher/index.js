@@ -32,7 +32,7 @@ const CourseEnrolled = mongoose.model('CourseEnrolled');
 const authenticate = require('./../../middleware/authenticate')
 const restrictTo = require('./../../middleware/restrictTo')
 
-router.post("/cafeStudents/:cafeId",authenticate,restrictTo("TEACHER"),async (req,res) => {
+router.get("/cafeStudents/:cafeId",/*authenticate,restrictTo("TEACHER"),*/async (req,res) => {
     try {
         let response = {
             message:"information of cafe",
@@ -40,23 +40,19 @@ router.post("/cafeStudents/:cafeId",authenticate,restrictTo("TEACHER"),async (re
             arr: []
         }
         const students = await User.find({cafe:req.params.cafeId,role:'STUDENT'}).select("_id firstName lastName phoneNumber email")
-        students.forEach(student => {
+        for (const student of students) {
             const currId = student._id;
-            const courses = await CourseEnrolled.find({user:currId}).select("_id course")
-            let arrCourses = []
-            courses.forEach(course => {
-                const courseId = course.course.type
-                const courseDetails = await Course.findOne({_id:courseId})
-                arrCourses.push(courseDetails)
-            })
-            arr.push({
+            const courses = await CourseEnrolled.find({user:currId}).populate({
+                path:'course', select:'courseName summary'
+            }).select("_id course")
+            response.arr.push({
                 firstName: student.firstName,
                 lastName: student.lastName,
                 phoneNumber: student.phoneNumber,
                 email: student.email,
-                courses : arrCourses
-            })
-        });
+                courses : courses
+            })   
+        }
         res.status(200).json(response)
     } catch (error) {
         console.log(error);
@@ -64,49 +60,62 @@ router.post("/cafeStudents/:cafeId",authenticate,restrictTo("TEACHER"),async (re
 })
 
 // request answer sheet for evaluation
-router.post("/requestTestEvaluate/:responseSheetId",authenticate,restrictTo("TEACHER"),async (req,res) => {
+router.get("/requestTestEvaluate/:responseSheetId",/*authenticate,restrictTo("TEACHER"),*/async (req,res) => {
     try {
-        data = await ResponseSheet.findById({_id: req.params.responseSheetId}).populate({
-            path: 'Test',
-            populate: { path: 'Question'}
+        data = await ResponseSheet.findById({_id: req.params.responseSheetId}).populate([{
+            path: 'testId',
+            populate: { path: 'questions'}
           }, {
-            path: 'Response',
-          });
+            path: 'responses',
+            populate: { path: 'questionId'}
+          }]);
         res.status(200).json({message:'Test and response details',done:true,data:data})
     } catch (error) {
         console.log(error);
     }
-})
+}) 
 
 
 // add score to the database
-router.post("/evaluateTest/:responseSheetId",authenticate,restrictTo("TEACHER"),async (req,res) => {
+router.post("/evaluateTest/student/:studentId/course/:courseId/test/:testId"/*,authenticate,restrictTo("TEACHER")*/,async (req,res) => {
     try {
-        responseSheet = await ResponseSheet.findById({_id: req.params.responseSheetId})
-        responseSheet.score = req.body.score
-        responseSheet.save(function (err) {
-            if (err){
-                console.log(err);
-                return;
-            }  
-            res.status(200).json({message:"Marks are added!",done:true});
-        }); 
+        course = await CourseEnrolled.findOne({user: req.params.studentId,course:req.params.courseId})
+        for (var test of course.testsDone) {
+            if(test.test.toString()===req.params.testId.toString()){
+                test.marksScored = req.body.marksScored
+                course.save()
+                res.status(200).json({message:"Marks are added!",done:true,course});
+                return 
+            }
+        }
+        
+             
     } catch (error) {
         console.log(error);
     }
 })
 
 
-router.post("/loadPendingEvaluations/:cafeId/course/:courseId",authenticate,restrictTo("TEACHER"),async (req,res) => {
+router.get("/loadPendingEvaluations/:cafeId",/*authenticate,restrictTo("TEACHER"),*/async (req,res) => {
     try {
         let response = {
             message:"list of pending evaluations",
             done:true,
         }
 
-        let pendingUsers = await CourseEnrolled.find({course:req.params.courseId}).populate({
-            path: 'user'
-        })
+        let users = await User.find({cafe:req.params.cafeId,role:'STUDENT'}).populate({
+            path: 'coursesEnrolled',
+            populate: {path:'course', select:'courseName'},
+            select:'testsDone'
+        }).select('firstName lastName username _id ')
+        for (const user of users) {
+            for (const course of user.coursesEnrolled) {
+                course.testsDone = course.testsDone.filter(obj=>{
+                    return obj.marksScored===-1
+                })
+            }
+        }
+        response.pendingEvaluations = users
 
         res.status(200).json(response)
     } catch (error) {

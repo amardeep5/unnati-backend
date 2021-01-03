@@ -14,6 +14,7 @@ app.use(express.json())
 app.use(require('./routes/auth/auth'))
 app.use(require('./routes/admin/index'))
 app.use(require('./routes/student/index'))
+app.use(require('./routes/teacher/index'))
 
 // app.get("/",authenticate,(req,res)=>{
 //     res.send("its Protected")
