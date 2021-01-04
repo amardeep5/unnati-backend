@@ -46,6 +46,7 @@ router.get("/cafeStudents/:cafeId",/*authenticate,restrictTo("TEACHER"),*/async 
                 path:'course', select:'courseName summary'
             }).select("_id course")
             response.arr.push({
+                _id:student._id,
                 firstName: student.firstName,
                 lastName: student.lastName,
                 phoneNumber: student.phoneNumber,
@@ -121,6 +122,57 @@ router.get("/loadPendingEvaluations/:cafeId",/*authenticate,restrictTo("TEACHER"
     } catch (error) {
         console.log(error);
     }
+})
+// enroll a user in a course 
+router.post("/user/:userId/cafe/:cafeId/courseEnroll/:courseId",async (req,res)=>{
+    const c =  await Course.findOne({_id: req.params.courseId})
+    var user = await User.findOne({_id:req.params.userId})
+    c.fees.forEach(fee =>{
+        if(fee.cafe.toString()===req.params.cafeId.toString()){
+            user.dueAmount= user.dueAmount + fee.amount
+        }
+    })
+    const course = await CourseEnrolled.create({user:req.params.userId,course:req.params.courseId})
+    user.coursesEnrolled.push(course._id)
+    user.save(err => {
+        if(err){
+            console.log(err)
+            return
+        }
+    })
+    // console.log(user.dueAmount)
+    res.status(200).json({done: true,message:'User enrolled in courses'})
+})
+// pay fees  add it to receipts of user
+router.post("/user/:userId/feesUpdate",async (req,res)=>{
+    // const course = await CourseEnrolled.findOne({user:req.params.userId,course:req.params.courseId})
+    const {amount,remarks} = req.body
+    const receipt = await Receipt.create({amount,remarks})
+    var user = await User.findOne({_id:req.params.userId})
+    user.receipts.push(receipt._id)
+    if(user.dueAmount>amount){
+        user.dueAmount = user.dueAmount - amount;
+    }else{
+        user.dueAmount = 0;
+    }
+    user.paidAmount = user.paidAmount + amount;
+    user.save(err => {
+        console.log(err)
+        return
+    })
+    res.status(200).json({done: true,message:'User fees paid and receipt generated'})
+})
+
+// fees status of a user
+router.get("/FeesStatus/user/:userId",async (req,res)=>{
+    try {
+        const user = await User.findOne({_id: req.params.userId}).select('paidAmount dueAmount')
+    
+        res.status(200).json({done: true,user,message:'User fees Status'})
+    } catch (error) {
+        console.log(error);
+    }
+
 })
 
 module.exports=router

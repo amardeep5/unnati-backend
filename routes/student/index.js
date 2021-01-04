@@ -123,65 +123,14 @@ router.get('/cafeinformation/:cafeId',async (req,res)=>{
 // all user past receipts 
 router.get("/user-receipts/:userId",async (req,res)=>{
     try {
-        const userReceipts = await User.findOne({_id: req.params.userId}).populate({path:'receipts', populate:{path:'courseEnrolled',select:'courseName'}}).select('receipts')
-        res.status(200).json({done: true,userReceipts,message:'All User Receipts'})
+        const userReceipts = await User.findOne({_id: req.params.userId}).populate('receipts').select('receipts')
+        res.status(200).json({done: true,userReceipts:userReceipts.receipts,message:'All User Receipts'})
     } catch (error) {
         console.log(error);
     }
 
 })
-// fees status of a user
-router.get("/FeesStatus/:userId/cafe/:cafeId",async (req,res)=>{
-    try {
-        const user = await User.findOne({_id: req.params.userId}).select('paidAmount dueAmount')
-    
-        res.status(200).json({done: true,user,message:'User fees Status'})
-    } catch (error) {
-        console.log(error);
-    }
 
-})
-// enroll a user in a course 
-router.post("/user/:userId/cafe/:cafeId/courseEnroll/:courseId",async (req,res)=>{
-    const c =  await Course.findOne({_id: req.params.courseId})
-    const fee = 0;
-    c.fees.forEach(fee =>{
-        if(fee.cafe.toString()==req.params.cafeId.toString()){
-            fee=fee.amount
-        }
-    })
-    const course = await CourseEnrolled.create({user:req.params.userId,course:req.params.courseId,fee})
-    const user = await User.findOne({_id:req.params.userId})
-    user.dueAmount+=fee;
-    user.coursesEnrolled.push(course._id)
-    user.save(err => {
-        if(err){
-            console.log(err)
-            return
-        }
-    })
-    res.status(200).json({done: true,message:'User enrolled in courses'})
-})
-// pay fees of a course and add it to receipts of user
-// router.post("/user/:userId/courseFeeUpdate/:courseId",async (req,res)=>{
-//     const course = await CourseEnrolled.findOne({user:req.params.userId,course:req.params.courseId})
-//     course.feesPaid = true
-//     course.save(err => {
-//         if(err){
-//             console.log(err)
-//             return
-//         }
-//     })
-//     const {amount,remarks} = req.body
-//     const receipt = await Receipt.create({amount,remarks})
-//     const user = await User.findOne({_id:req.params.userId})
-//     user.receipts.push(receipt)
-//     user.save(err => {
-//         console.log(err)
-//         return
-//     })
-//     res.status(200).json({done: true,message:'User enrolled  course fees paid '})
-// })
 // list of all enrolled courses
 router.get("/enrolled-courses/:userId",async (req,res) => {
     try {
