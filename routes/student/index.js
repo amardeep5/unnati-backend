@@ -46,7 +46,7 @@ router.get("/cafe/:cafeId/coursedetail/:courseId",async (req,res) => {
         var course = await Course.findOne({_id: req.params.courseId}).populate({
             path: 'topics',
             select:'topicName',
-        }).select("subjectCode subjectName courseName summary topics fees")
+        }).select("courseName summary topics fees")
         var cafeFee=0
         course.fees.forEach(async (fee)=>{
             if(fee.cafe.toString() === req.params.cafeId.toString()){
