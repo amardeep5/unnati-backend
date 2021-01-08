@@ -1,13 +1,13 @@
 const mongoose = require('mongoose')
 const assignmentSchema = new mongoose.Schema({
-    subjectCode:{
-        type:String,
-        required:[true, 'Please enter valid subject code!']
-    },
-    subjectName:{
-        type:String,
-        required:[true, 'Please enter valid subject name!']
-    },
+    // subjectCode:{
+    //     type:String,
+    //     required:[true, 'Please enter valid subject code!']
+    // },
+    // subjectName:{
+    //     type:String,
+    //     required:[true, 'Please enter valid subject name!']
+    // },
     // serialNumber:{
     //     type:Number,
     //     // required:true

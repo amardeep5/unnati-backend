@@ -235,13 +235,13 @@ router.post("/create-question",/*authenticate,restrictTo("ADMIN"),*/ async (req,
 
 })
 router.post("/create-assignment",/*authenticate,restrictTo("ADMIN"),*/ async (req, res) => {
-    const {subjectCode,subjectName,assignmentName,duration,maxMarks,questions}=req.body
-    if(!subjectCode||!subjectName||!assignmentName||!duration||!maxMarks||!questions){
+    const {assignmentName,duration,maxMarks,questions}=req.body
+    if(!assignmentName||!duration||!maxMarks||!questions){
         res.status(422).json({error:" fill all the fields",done:false});
     }
     else{
         try {
-            const ass = Assignment.create({subjectCode,subjectName,assignmentName,duration,maxMarks,questions});
+            const ass = Assignment.create({assignmentName,duration,maxMarks,questions});
             res.status(200).json({message:'Assignment created',done:true,ass});
         } catch (error) {
          console.log(error);   
@@ -250,13 +250,13 @@ router.post("/create-assignment",/*authenticate,restrictTo("ADMIN"),*/ async (re
 
 })
 router.post("/create-test",/*authenticate,restrictTo("ADMIN"),*/ async (req, res) => {
-    const {subjectCode,subjectName,testName,duration,maxMarks,questions}=req.body
-    if(!subjectCode||!subjectName||!testName||!duration||!maxMarks||!questions){
+    const {testName,duration,maxMarks,questions}=req.body
+    if(!testName||!duration||!maxMarks||!questions){
         res.status(422).json({error:" fill all the fields",done:false});
     }
     else{
         try {
-            const test=Test.create({subjectCode,subjectName,testName,duration,maxMarks,questions});
+            const test=Test.create({testName,duration,maxMarks,questions});
             res.status(200).json({message:'Test created',done:true,test});
         } catch (error) {
          console.log(error);   
@@ -265,13 +265,13 @@ router.post("/create-test",/*authenticate,restrictTo("ADMIN"),*/ async (req, res
 
 })
 router.post("/create-topic",/*authenticate,restrictTo("ADMIN"),*/ async (req, res) => {
-    const {subjectCode,subjectName,topicName,contentOrder}=req.body
-    if(!subjectCode||!subjectName||!topicName||!contentOrder){
+    const {courseName,topicName,contentOrder}=req.body
+    if(!courseName||!topicName||!contentOrder){
         res.status(422).json({error:" fill all the fields",done:false});
     }
     else{
         try {
-            const topic=Topic.create({subjectCode,subjectName,topicName,contentOrder});
+            const topic=Topic.create({courseName,topicName,contentOrder});
             res.status(200).json({message:'Topic created',done:true,topic});
         } catch (error) {
          console.log(error);   
@@ -279,13 +279,13 @@ router.post("/create-topic",/*authenticate,restrictTo("ADMIN"),*/ async (req, re
     }
 })
 router.post("/create-course",/*authenticate,restrictTo("ADMIN"),*/ async (req, res) => {
-    const {subjectCode,subjectName,courseName,topics,fees,summary}=req.body
-    if(!subjectCode||!subjectName||!courseName||!topics||!fees){
+    const {courseName,topics,fees,summary}=req.body
+    if(!courseName||!topics||!fees){
         res.status(422).json({error:" fill all the fields",done:false});
     }
     else{
         try {
-            const course=Course.create({subjectCode,subjectName,courseName,topics,fees,summary});
+            const course=Course.create({courseName,topics,fees,summary});
             res.status(200).json({message:'Course created',done:true,course});
         } catch (error) {
          console.log(error);   
@@ -411,13 +411,13 @@ router.post('/deleteUser/:userId',async (req,res)=>{
 })
 //lecture creation
 router.post("/create-lecture",/*authenticate,restrictTo("ADMIN"),*/ async (req, res) => {
-    const {youtubeId,name,notes}=req.body
-    if(!youtubeId|| !name){
+    const {driveId,name,noteId}=req.body
+    if(!driveId|| !name){
         res.status(422).json({error:" fill all the fields",done:false});
     }
     else{
         try {
-            const lecture =Lecture.create({youtubeId,name,notes});
+            const lecture =Lecture.create({driveId,name,noteId});
             res.status(200).json({message:'Lecture created',done:true,lecture});
         } catch (error) {
          console.log(error);   
