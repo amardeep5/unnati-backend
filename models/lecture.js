@@ -1,12 +1,12 @@
 const mongoose = require('mongoose')
 const lectureSchema = new mongoose.Schema({
  
-    youtubeId:{
+    driveId:{
         type:String,
         required:true
     },
     name:{ type: String},
-    notes:{
+    noteId:{
         type: String,
         //required: 'URL can\'t be empty',
         unique: true

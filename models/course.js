@@ -1,14 +1,14 @@
 const mongoose = require('mongoose')
 const courseSchema = new mongoose.Schema({
 
-    subjectCode:{
-        type:String,
-        required:[true, 'Please enter valid subject code!']
-    },
-    subjectName:{
-        type:String,
-        required:[true, 'Please enter valid subject name!']
-    },
+    // subjectCode:{
+    //     type:String,
+    //     required:[true, 'Please enter valid subject code!']
+    // },
+    // subjectName:{
+    //     type:String,
+    //     required:[true, 'Please enter valid subject name!']
+    // },
     courseName: {
         type:String,
         required:[true, 'Please fill the course name !'],

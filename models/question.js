@@ -20,7 +20,7 @@ const questionSchema = new mongoose.Schema({
     },
     maxMarks:{
         type:Number,
-        required:[true, 'Please enter maximum marks of question!']
+        // required:[true, 'Please enter maximum marks of question!']
     }
 })  
 

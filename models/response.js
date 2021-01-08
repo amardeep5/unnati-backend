@@ -12,10 +12,10 @@ const responseSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Test"
     },
-    response: {
+    response: [{
         type:String,
         required:[true, 'Please fill the response!'],
-    },    
+    }],    
     createdAt: { type: Date, default: Date.now },
 
 })
