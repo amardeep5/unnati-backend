@@ -29,7 +29,7 @@ const Assignment = mongoose.model('Assignment');
 const authenticate = require('./../../middleware/authenticate')
 const restrictTo = require('./../../middleware/restrictTo')
 
-router.post("/cafe-list",/*authenticate,restrictTo("ADMIN"),*/async (req,res) => {
+router.get("/cafe-list",/*authenticate,restrictTo("ADMIN"),*/async (req,res) => {
     try {
         const cafes = await Cafe.find({})
         if(cafes){
