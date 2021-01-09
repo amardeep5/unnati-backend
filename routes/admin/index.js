@@ -436,6 +436,5 @@ router.post("/create-lecture",/*authenticate,restrictTo("ADMIN"),*/ async (req, 
          console.log(error);   
         }
     }
-
 })
 module.exports=router

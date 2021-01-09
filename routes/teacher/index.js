@@ -172,7 +172,49 @@ router.get("/FeesStatus/user/:userId",async (req,res)=>{
     } catch (error) {
         console.log(error);
     }
+})
 
+
+
+//verified students
+router.get("/verified-students/:cafeId",/*authenticate,restrictTo("ADMIN"),*/ async (req, res) => {
+    try {
+        let response = {
+            message:"Verified students of cafe",
+            done:true,
+            arr: []
+        }
+        const students = await User.find({cafe:req.params.cafeId,role:'STUDENT'}).select("_id firstName lastName phoneNumber email isTeacherApproved isAdminApproved")
+        for (const student of students) {
+            if(student.isTeacherApproved===true || student.isAdminApproved===true ) {
+                response.arr.push(student)
+            }
+        }
+        res.status(200).json(response)
+    } catch (error) {
+        console.log(error);
+    }
+})
+
+//unverified students
+router.get("/unverified-students/:cafeId",/*authenticate,restrictTo("ADMIN"),*/ async (req, res) => {
+    try {
+        let response = {
+            message:"Unverified students of cafe",
+            done:true,
+            arr: []
+        }
+        const students = await User.find({cafe:req.params.cafeId,role:'STUDENT'}).select("_id firstName lastName phoneNumber email isTeacherApproved isAdminApproved")
+        
+        for (const student of students) {
+            if(student.isTeacherApproved===false && student.isAdminApproved===false) {
+                response.arr.push(student)
+            }
+        }
+        res.status(200).json(response)
+    } catch (error) {
+        console.log(error);
+    }
 })
 
 module.exports=router
