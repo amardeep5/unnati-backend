@@ -29,6 +29,19 @@ const Assignment = mongoose.model('Assignment');
 const authenticate = require('./../../middleware/authenticate')
 const restrictTo = require('./../../middleware/restrictTo')
 
+router.post("/cafe-list",/*authenticate,restrictTo("ADMIN"),*/async (req,res) => {
+    try {
+        const cafes = await Cafe.find({})
+        if(cafes){
+            res.status(200).json({message:" All cafe list ",done:true,cafes});
+        }else{
+            res.status(402).json({error:" No cafe found",done:false});
+        }
+    } catch (error) {
+        console.log(error);
+    }
+})
+
 router.post("/teacherApproval/:id",/*authenticate,restrictTo("ADMIN"),*/async (req,res) => {
     try {
         const teacher = await User.findById({_id: req.params.id})
