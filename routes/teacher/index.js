@@ -106,7 +106,7 @@ router.get("/loadPendingEvaluations/:cafeId",/*authenticate,restrictTo("TEACHER"
 
         let users = await User.find({cafe:req.params.cafeId,role:'STUDENT'}).populate({
             path: 'coursesEnrolled',
-            populate: {path:'course', select:'courseName'},
+            populate: [{path:'course', select:'courseName'},{path:'testsDone.test', select:'testName'}],
             select:'testsDone'
         }).select('firstName lastName username _id ')
         for (const user of users) {
