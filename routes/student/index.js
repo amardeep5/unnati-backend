@@ -358,7 +358,11 @@ router.post('/enrolled-course/:userId/course/:courseId/assignment/:assignmentId'
         for(var ass of enrolledCourse.assignmentsDone){
             if(ass.assignment.toString()===req.params.assignmentId.toString()){
                 ass.marksScored = marksScored
-                ass.attemptsLeft = ass.attemptsLeft - 1
+                if(ass.attemptsLeft>0){
+                    ass.attemptsLeft = ass.attemptsLeft - 1
+                }else{
+                    ass.attemptsLeft = 0
+                }
                 done = true;
             }
         }
@@ -418,7 +422,7 @@ router.post('/enrolled-course/:userId/course/:courseId/test/:testId',async (req,
 router.post('/enrolled-course/:userId/course/:courseId/lecture/:lectureId',async (req,res)=>{
     try {
         enrolledCourse = await CourseEnrolled.findOne({user : req.params.userId, course:req.params.courseId})
-        enrolledCourse.lecturesDone.push(lectureId)
+        enrolledCourse.lecturesDone.push(req.params.lectureId)
         enrolledCourse.save(err=>{
             if(err){
                 console.log(err)
