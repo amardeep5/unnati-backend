@@ -72,6 +72,7 @@ router.post("/studentApproval/:id",/*authenticate,restrictTo("ADMIN","TEACHER"),
                 res.status(402).json({error:" Not A student ",done:false});
             }
             else{
+                student.isAdminApproved=true
                 student.isTeacherApproved=true
                 student.save(function (err) {
                     if (err){
@@ -118,6 +119,7 @@ router.post("/studentRejection/:id",/*authenticate,*/restrictTo("ADMIN","TEACHER
                 res.status(402).json({error:" Not A student ",done:false});
             }
             else{
+                student.isAdminRejected=true
                 student.isTeacherRejected=true
                 student.save(function (err) {
                     if (err){
@@ -436,6 +438,5 @@ router.post("/create-lecture",/*authenticate,restrictTo("ADMIN"),*/ async (req, 
          console.log(error);   
         }
     }
-
 })
 module.exports=router

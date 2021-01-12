@@ -106,7 +106,7 @@ router.get('/cafeinformation/:cafeId',async (req,res)=>{
     try {
         const cafe  = await Cafe.findOne({ _id: req.params.cafeId})
         if(cafe){
-            const users = await User.find({cafe: req.params.cafeId}).select('username role')
+            const users = await User.find({cafe: req.params.cafeId}).select('username role firstName lastName')
             if(users){
                 res.json({done: true,cafe,userNumbers : users.length-1,users})
             }else{
