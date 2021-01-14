@@ -132,6 +132,10 @@ router.post("/user/:userId/cafe/:cafeId/courseEnroll/:courseId",async (req,res)=
             user.dueAmount= user.dueAmount + fee.amount
         }
     })
+    const alreadyC = await CourseEnrolled.findOne({user:req.params.userId,course:req.params.courseId})
+    if(alreadyC){
+        res.status(200).json({done: false,error:'User already enrolled in  this course'})
+    } 
     const course = await CourseEnrolled.create({user:req.params.userId,course:req.params.courseId})
     user.coursesEnrolled.push(course._id)
     user.save(err => {
@@ -141,7 +145,7 @@ router.post("/user/:userId/cafe/:cafeId/courseEnroll/:courseId",async (req,res)=
         }
     })
     // console.log(user.dueAmount)
-    res.status(200).json({done: true,message:'User enrolled in courses'})
+    res.status(200).json({done: true,message:'User enrolled in course'})
 })
 // pay fees  add it to receipts of user
 router.post("/user/:userId/feesUpdate",async (req,res)=>{

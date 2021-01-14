@@ -284,7 +284,7 @@ router.get("/enrolled-course/:userId/course/:courseId/test/:testId",async (req,r
 
         enrolledCourse.testsDone.forEach(test=>{
             if(test.test.toString()===req.params.testId.toString()){
-                marksScored = test.markScored    
+                marksScored = test.marksScored    
                 done = true;
             }
         })

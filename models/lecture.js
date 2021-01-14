@@ -3,7 +3,7 @@ const lectureSchema = new mongoose.Schema({
  
     driveId:{
         type:String,
-        required:true
+        // required:true
     },
     name:{ type: String},
     noteId:{
