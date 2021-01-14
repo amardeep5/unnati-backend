@@ -233,7 +233,7 @@ router.post("/removeAccess/:userId/course/:courseId",/*authenticate,restrictTo("
     } catch (error) {
         console.log(error);   
     }
-})
+}) 
 router.post("/create-question",/*authenticate,restrictTo("ADMIN"),*/ async (req, res) => {
     const {correctAns,type,name,statement,options,maxMarks}=req.body
     if(!type||!statement||!maxMarks|| !name){

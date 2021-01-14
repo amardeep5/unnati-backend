@@ -9,7 +9,7 @@ const lectureSchema = new mongoose.Schema({
     noteId:{
         type: String,
         //required: 'URL can\'t be empty',
-        unique: true
+        // unique: true
     },
     // dueDays:{type:Number,default:7},
     createdAt: { type: Date, default: Date.now },

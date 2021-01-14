@@ -184,7 +184,11 @@ router.get("/verified-students/:cafeId",/*authenticate,restrictTo("ADMIN"),*/ as
             done:true,
             arr: []
         }
-        const students = await User.find({cafe:req.params.cafeId,role:'STUDENT'}).select("_id firstName lastName phoneNumber email isTeacherApproved isAdminApproved")
+        const students = await User.find({cafe:req.params.cafeId,role:'STUDENT'}).populate({
+            path:'coursesEnrolled',
+            populate: { path: 'course',select:'courseName'},
+            select:'course'
+        }).select("_id firstName lastName phoneNumber email isTeacherApproved isAdminApproved coursesEnrolled")
         for (const student of students) {
             if(student.isTeacherApproved===true || student.isAdminApproved===true ) {
                 response.arr.push(student)
