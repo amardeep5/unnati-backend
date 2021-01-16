@@ -16,7 +16,8 @@ router.post("/login",async (req,res)=>{
           if(!savedUser){
             res.status(422).json({error:"Password or Email is incorrect",done:false}) 
           }else{
-              const passwordMatched = bcrypt.compare(password,savedUser.password)
+              const passwordMatched = await bcrypt.compare(password,savedUser.password)
+              console.log(passwordMatched)
               if(passwordMatched){
                 const token = jwt.sign({_id:savedUser._id},jwt_secret) 
                 const {username,email,_id,firstName,lastName,phoneNumber,role,cafe}=savedUser;
